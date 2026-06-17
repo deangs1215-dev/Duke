@@ -24,7 +24,7 @@
               <article class="contact-row"><span class="icon-box">TEL</span><div><strong>Phone</strong><br><a href="tel:+27642204536">+27 (0) 64 220 4536</a></div></article>
             </div>
           </div>
-          <form class="form" action="mailto:enquiries@dukegs.com" method="post" enctype="text/plain">
+          <form class="form" action="/api/enquiry" method="post" data-enquiry-form>
             <input name="name" type="text" placeholder="Your Name" required>
             <input name="email" type="email" placeholder="Email Address" required>
             <select name="service" required>
@@ -38,6 +38,7 @@
             </select>
             <textarea name="message" placeholder="Tell us about your requirement" required></textarea>
             <button class="btn" type="submit">Send Message</button>
+            <p class="form-message" data-form-message></p>
           </form>
         </div>
       </section>
