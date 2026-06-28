@@ -11,7 +11,7 @@
   --white: #ffffff;
   --shadow: 0 18px 45px rgba(0, 0, 0, 0.14);
   --topbar-height: 34px;
-  --navbar-height: 64px;
+  --navbar-height: 82px;
   --header-height: calc(var(--topbar-height) + var(--navbar-height));
 }
 
@@ -87,27 +87,15 @@ a {
 .brand {
   display: flex;
   align-items: center;
+  flex: 0 0 auto;
   min-height: var(--navbar-height);
-  font-family: "Roboto Condensed", Impact, sans-serif;
-  font-size: 29px;
-  font-weight: 700;
-  letter-spacing: 0;
-  text-transform: uppercase;
 }
 
-.brand-mark {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  margin-right: 11px;
-  place-items: center;
-  background: var(--orange);
-  color: var(--charcoal);
-  font-size: 23px;
-}
-
-.brand span:last-child {
-  color: var(--charcoal);
+.brand-logo {
+  width: clamp(235px, 22vw, 340px);
+  height: 72px;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .nav-links {
@@ -208,9 +196,114 @@ main > :first-child:not(.hero) {
   transform: scale(1.02);
 }
 
+.hero-animated::before {
+  z-index: 1;
+  background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.84), rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.18));
+  transform: none;
+}
+
+.hero-motion,
+.hero-frame,
+.hero-hover-sparks {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-motion {
+  z-index: 0;
+  overflow: hidden;
+  background: var(--charcoal);
+}
+
+.hero-frame {
+  background-position: center;
+  background-size: cover;
+  transform: scale(1.04);
+  will-change: opacity, transform, filter;
+}
+
+.hero-frame-ready {
+  background-image: url("../assets/duke-hero-cutting-ready.png");
+  animation: heroReadyFrame 9s ease-in-out infinite;
+}
+
+.hero-frame-cutting {
+  background-image: url("../assets/duke-hero-cutting-sparks.png");
+  animation: heroCuttingFrame 9s ease-in-out infinite;
+  opacity: 0;
+}
+
+.hero-hover-sparks {
+  z-index: 2;
+  opacity: 0.56;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
 .hero .container {
   position: relative;
-  z-index: 1;
+  z-index: 3;
+}
+
+@keyframes heroReadyFrame {
+  0%,
+  12% {
+    opacity: 1;
+    filter: brightness(0.92);
+    transform: scale(1.045) translateY(-1.2%);
+  }
+
+  28%,
+  74% {
+    opacity: 0;
+    filter: brightness(0.78);
+    transform: scale(1.075) translateY(1.6%);
+  }
+
+  88%,
+  100% {
+    opacity: 1;
+    filter: brightness(0.92);
+    transform: scale(1.045) translateY(-1.2%);
+  }
+}
+
+@keyframes heroCuttingFrame {
+  0%,
+  12% {
+    opacity: 0;
+    filter: brightness(0.84) saturate(1);
+    transform: scale(1.06) translateY(-0.8%);
+  }
+
+  28%,
+  74% {
+    opacity: 1;
+    filter: brightness(1.02) saturate(1.24);
+    transform: scale(1.085) translateY(1.4%);
+  }
+
+  88%,
+  100% {
+    opacity: 0;
+    filter: brightness(0.84) saturate(1);
+    transform: scale(1.06) translateY(-0.8%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-frame-ready,
+  .hero-frame-cutting {
+    animation: none;
+  }
+
+  .hero-frame-ready {
+    opacity: 0;
+  }
+
+  .hero-frame-cutting {
+    opacity: 1;
+  }
 }
 
 .eyebrow {
@@ -290,9 +383,27 @@ main > :first-child:not(.hero) {
 }
 
 .about-feature-image {
+  position: relative;
   overflow: hidden;
   min-height: 430px;
   box-shadow: var(--shadow);
+}
+
+.about-feature-image::before {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+}
+
+.about-feature-image::before {
+  inset: 0;
+  background:
+    radial-gradient(circle at 48% 60%, rgba(72, 190, 255, 0.34), rgba(72, 190, 255, 0.08) 26%, transparent 48%),
+    linear-gradient(105deg, transparent 18%, rgba(72, 190, 255, 0.22) 44%, rgba(255, 255, 255, 0.1) 50%, transparent 62%);
+  mix-blend-mode: screen;
+  opacity: 0.62;
+  transform: translateX(-36%);
+  animation: aboutBlueShimmer 5.8s ease-in-out infinite;
 }
 
 .about-feature-image img {
@@ -301,6 +412,23 @@ main > :first-child:not(.hero) {
   object-fit: cover;
   object-position: center;
 }
+
+@keyframes aboutBlueShimmer {
+  0% {
+    opacity: 0.22;
+    transform: translateX(-46%);
+  }
+
+  45% {
+    opacity: 0.76;
+  }
+
+  100% {
+    opacity: 0.24;
+    transform: translateX(42%);
+  }
+}
+
 
 .section.soft {
   background: var(--soft);
@@ -492,19 +620,46 @@ main > :first-child:not(.hero) {
 }
 
 .stats {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1px;
   background: rgba(255, 255, 255, 0.16);
+  --progress: 0%;
+}
+
+.stats-progress::before,
+.stats-progress::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  z-index: 2;
+}
+
+.stats-progress::before {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.stats-progress::after {
+  background:
+    linear-gradient(90deg, var(--orange) var(--progress), transparent 0) top left / 100% 2px no-repeat,
+    linear-gradient(180deg, var(--orange) var(--progress), transparent 0) top right / 2px 100% no-repeat,
+    linear-gradient(270deg, var(--orange) var(--progress), transparent 0) bottom right / 100% 2px no-repeat,
+    linear-gradient(0deg, var(--orange) var(--progress), transparent 0) bottom left / 2px 100% no-repeat;
+  filter: drop-shadow(0 0 8px rgba(247, 166, 0, 0.72));
 }
 
 .stat {
+  position: relative;
   padding: 34px 24px;
   background: var(--charcoal);
   text-align: center;
 }
 
 .stat strong {
+  position: relative;
+  z-index: 1;
   display: block;
   color: var(--orange);
   font-family: "Roboto Condensed", Impact, sans-serif;
@@ -513,6 +668,8 @@ main > :first-child:not(.hero) {
 }
 
 .stat span {
+  position: relative;
+  z-index: 1;
   color: rgba(255, 255, 255, 0.78);
   font-weight: 700;
   text-transform: uppercase;
@@ -535,6 +692,22 @@ main > :first-child:not(.hero) {
   background-size: cover;
 }
 
+.cta-band::after {
+  position: absolute;
+  inset: -18% auto -18% -38%;
+  width: 34%;
+  content: "";
+  background:
+    radial-gradient(ellipse at center, rgba(255, 188, 55, 0.34) 0%, rgba(247, 166, 0, 0.18) 35%, rgba(247, 166, 0, 0) 70%),
+    linear-gradient(100deg, rgba(247, 166, 0, 0) 0%, rgba(255, 190, 65, 0.22) 48%, rgba(247, 166, 0, 0) 100%);
+  filter: blur(16px);
+  mix-blend-mode: screen;
+  opacity: 0.8;
+  transform: skewX(-18deg);
+  animation: ctaLightSweep 7.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
 .cta-band .container {
   position: relative;
   z-index: 1;
@@ -548,6 +721,37 @@ main > :first-child:not(.hero) {
   max-width: 640px;
   margin: 0;
   color: rgba(255, 255, 255, 0.76);
+}
+
+@keyframes ctaLightSweep {
+  0% {
+    transform: translateX(0) skewX(-18deg);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.72;
+  }
+
+  48% {
+    opacity: 0.9;
+  }
+
+  82% {
+    opacity: 0.56;
+  }
+
+  100% {
+    transform: translateX(430%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-band::after {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 .project-grid {
@@ -724,6 +928,30 @@ main > :first-child:not(.hero) {
   color: #b00020;
 }
 
+.scroll-climber {
+  position: fixed;
+  top: var(--header-height);
+  right: -112px;
+  z-index: 70;
+  width: clamp(240px, 25vw, 430px);
+  color: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
+  will-change: transform, filter;
+}
+
+.scroll-climber img {
+  display: block;
+  filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.24));
+  transition: opacity 0.22s ease, transform 0.22s ease, filter 0.22s ease;
+}
+
+.scroll-climber .climber-main {
+  width: 100%;
+  height: auto;
+}
+
 .footer {
   background: #0b0b0b;
   color: rgba(255, 255, 255, 0.72);
@@ -765,7 +993,7 @@ main > :first-child:not(.hero) {
 @media (max-width: 920px) {
   :root {
     --topbar-height: 0px;
-    --navbar-height: 64px;
+    --navbar-height: 74px;
   }
 
   .topbar {
@@ -818,6 +1046,10 @@ main > :first-child:not(.hero) {
   .cta-band .container {
     display: grid;
   }
+
+  .scroll-climber {
+    display: none;
+  }
 }
 
 @media (max-width: 620px) {
@@ -825,14 +1057,9 @@ main > :first-child:not(.hero) {
     width: min(100% - 24px, 1140px);
   }
 
-  .brand {
-    font-size: 25px;
-  }
-
-  .brand-mark {
-    width: 42px;
-    height: 42px;
-    font-size: 19px;
+  .brand-logo {
+    width: 205px;
+    height: 64px;
   }
 
   .hero {

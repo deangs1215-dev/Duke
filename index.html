@@ -23,7 +23,7 @@
       </div>
       <nav class="navbar" aria-label="Primary navigation">
         <div class="container">
-          <a class="brand" href="index.html"><span class="brand-mark">D</span><span>DUKE</span></a>
+          <a class="brand" href="index.html" aria-label="DUKE Global Services home"><img class="brand-logo" src="assets/duke-logo.png" alt="DUKE Global Services"></a>
           <button class="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false">Menu</button>
           <div class="nav-links">
             <a class="active" href="index.html">Home</a>
@@ -39,7 +39,12 @@
     </header>
 
     <main>
-      <section class="hero" style="--hero-image: url('https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1800&q=80');">
+      <section class="hero hero-animated" data-hero-animation>
+        <div class="hero-motion" aria-hidden="true">
+          <div class="hero-frame hero-frame-ready"></div>
+          <div class="hero-frame hero-frame-cutting"></div>
+          <canvas class="hero-hover-sparks" data-hero-hover-sparks></canvas>
+        </div>
         <div class="container">
           <span class="eyebrow">Engineering. Supply. Delivery.</span>
           <h1>We Take Care Of Your Work Like It Is Our Own</h1>
@@ -125,11 +130,11 @@
 
       <section class="section dark">
         <div class="container">
-          <div class="stats">
+          <div class="stats stats-progress">
             <div class="stat"><strong>4</strong><span>Core Sectors</span></div>
             <div class="stat"><strong>2</strong><span>Operating Regions</span></div>
             <div class="stat"><strong>24/7</strong><span>Site Mindset</span></div>
-            <div class="stat"><strong>100%</strong><span>Client Focus</span></div>
+            <div class="stat"><strong data-count-percent>0%</strong><span>Client Focus</span></div>
           </div>
         </div>
       </section>
