@@ -9,6 +9,29 @@ if (toggle && nav) {
   });
 }
 
+const createCubeWatermark = () => {
+  const watermark = document.createElement("div");
+  const cube = document.createElement("div");
+  const faces = ["front", "back", "right", "left", "top", "bottom"];
+
+  watermark.className = "cube-watermark";
+  watermark.setAttribute("aria-hidden", "true");
+  cube.className = "cube-watermark-shape";
+
+  faces.forEach((face) => {
+    const side = document.createElement("span");
+    side.className = `cube-face cube-face-${face}`;
+    cube.appendChild(side);
+  });
+
+  watermark.appendChild(cube);
+  document.body.appendChild(watermark);
+};
+
+if (!window.matchMedia("(max-width: 620px)").matches) {
+  createCubeWatermark();
+}
+
 const enquiryForm = document.querySelector("[data-enquiry-form]");
 
 if (enquiryForm) {

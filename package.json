@@ -1,0 +1,10 @@
+{
+  "name": "duke-global-services-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static DUKE Global Services website with a local Node preview and enquiry endpoint.",
+  "scripts": {
+    "start": "node server.js 58231",
+    "check": "node scripts/smoke-check.js"
+  }
+}

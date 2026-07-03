@@ -1,0 +1,16 @@
+{
+  "name": "DUKE Global Services",
+  "short_name": "DUKE",
+  "description": "Engineering consulting, inspection support, NDT solutions and product supply.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f7a600",
+  "icons": [
+    {
+      "src": "assets/duke-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
