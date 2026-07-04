@@ -2,7 +2,7 @@ const http = require("http");
 const { spawn } = require("child_process");
 
 const port = 58232;
-const pages = ["/index.html", "/about.html", "/services.html", "/project.html", "/pricing.html", "/contact.html"];
+const pages = ["/index.html", "/about.html", "/services.html", "/project.html", "/pricing.html", "/contact.html", "/404.html"];
 const server = spawn(process.execPath, ["server.js", String(port)], { stdio: "ignore" });
 
 function requestPage(pathname) {

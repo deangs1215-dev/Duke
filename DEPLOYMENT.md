@@ -36,6 +36,12 @@ Publish directory:
 /
 ```
 
+The repository includes:
+
+- `_headers` for basic security and cache headers on static hosts that support it.
+- `_redirects` for common legacy paths and a branded 404 fallback.
+- `.github/workflows/site-check.yml` to run a smoke check on pushes to `main`.
+
 ## 3. Domain Setup
 
 Current planned domain in SEO files:
@@ -77,6 +83,7 @@ Check these pages before launch:
 - `/project.html`
 - `/pricing.html`
 - `/contact.html`
+- `/404.html`
 
 Confirm:
 
@@ -85,3 +92,4 @@ Confirm:
 - images load quickly
 - footer email and phone details are correct
 - SEO preview image appears when sharing the domain
+- GitHub Actions `Site Check` passes on the latest `main` branch
