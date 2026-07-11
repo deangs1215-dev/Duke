@@ -245,3 +245,241 @@ if (percentCounter) {
 
   requestAnimationFrame(animatePercent);
 }
+
+const testCanvas = document.querySelector("[data-test-canvas]");
+
+if (testCanvas) {
+  const context = testCanvas.getContext("2d");
+  const points = [];
+  const pointer = { x: 0, y: 0, active: false };
+  let width = 0;
+  let height = 0;
+  let lastTime = performance.now();
+
+  const resizeTestCanvas = () => {
+    const rect = testCanvas.getBoundingClientRect();
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    width = rect.width;
+    height = rect.height;
+    testCanvas.width = Math.max(1, Math.round(width * ratio));
+    testCanvas.height = Math.max(1, Math.round(height * ratio));
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    points.length = 0;
+
+    const count = Math.max(44, Math.round((width * height) / 18500));
+    for (let index = 0; index < count; index += 1) {
+      points.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 18,
+        vy: (Math.random() - 0.5) * 18,
+        size: 1 + Math.random() * 2.4,
+      });
+    }
+  };
+
+  const drawTestCanvas = (time) => {
+    const delta = Math.min((time - lastTime) / 1000, 0.04);
+    lastTime = time;
+    context.clearRect(0, 0, width, height);
+
+    points.forEach((point, index) => {
+      point.x += point.vx * delta;
+      point.y += point.vy * delta;
+
+      if (pointer.active) {
+        const dx = point.x - pointer.x;
+        const dy = point.y - pointer.y;
+        const distance = Math.max(Math.hypot(dx, dy), 1);
+        if (distance < 180) {
+          const force = (180 - distance) / 180;
+          point.x += (dx / distance) * force * 36 * delta;
+          point.y += (dy / distance) * force * 36 * delta;
+        }
+      }
+
+      if (point.x < -20) point.x = width + 20;
+      if (point.x > width + 20) point.x = -20;
+      if (point.y < -20) point.y = height + 20;
+      if (point.y > height + 20) point.y = -20;
+
+      for (let nextIndex = index + 1; nextIndex < points.length; nextIndex += 1) {
+        const other = points[nextIndex];
+        const distance = Math.hypot(point.x - other.x, point.y - other.y);
+        if (distance < 150) {
+          const opacity = (1 - distance / 150) * 0.22;
+          context.strokeStyle = `rgba(247, 166, 0, ${opacity})`;
+          context.lineWidth = 1;
+          context.beginPath();
+          context.moveTo(point.x, point.y);
+          context.lineTo(other.x, other.y);
+          context.stroke();
+        }
+      }
+
+      context.fillStyle = "rgba(255, 255, 255, 0.72)";
+      context.beginPath();
+      context.arc(point.x, point.y, point.size, 0, Math.PI * 2);
+      context.fill();
+    });
+
+    requestAnimationFrame(drawTestCanvas);
+  };
+
+  window.addEventListener("resize", resizeTestCanvas);
+  window.addEventListener("pointermove", (event) => {
+    const rect = testCanvas.getBoundingClientRect();
+    pointer.x = event.clientX - rect.left;
+    pointer.y = event.clientY - rect.top;
+    pointer.active = true;
+  });
+  window.addEventListener("pointerleave", () => {
+    pointer.active = false;
+  });
+
+  resizeTestCanvas();
+  requestAnimationFrame(drawTestCanvas);
+}
+
+document.querySelectorAll("[data-network-canvas]").forEach((canvas) => {
+  const context = canvas.getContext("2d");
+  const panel = canvas.closest(".about-network-panel") || canvas;
+  const points = [];
+  const pointer = { x: 0, y: 0, active: false };
+  let width = 0;
+  let height = 0;
+  let lastTime = performance.now();
+
+  const resizeNetworkCanvas = () => {
+    const rect = canvas.getBoundingClientRect();
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    width = rect.width;
+    height = rect.height;
+    canvas.width = Math.max(1, Math.round(width * ratio));
+    canvas.height = Math.max(1, Math.round(height * ratio));
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    points.length = 0;
+
+    const count = Math.max(58, Math.round((width * height) / 9800));
+    for (let index = 0; index < count; index += 1) {
+      points.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        baseSpeed: 0.65 + Math.random() * 0.9,
+        driftOffset: Math.random() * Math.PI * 2,
+        vx: (Math.random() - 0.5) * 20,
+        vy: (Math.random() - 0.5) * 20,
+        pulse: Math.random() * Math.PI * 2,
+        size: 1.2 + Math.random() * 3.8,
+      });
+    }
+  };
+
+  const drawNetworkCanvas = (time) => {
+    const delta = Math.min((time - lastTime) / 1000, 0.04);
+    lastTime = time;
+
+    context.clearRect(0, 0, width, height);
+    const glow = context.createRadialGradient(width * 0.46, height * 0.54, 0, width * 0.46, height * 0.54, width * 0.72);
+    glow.addColorStop(0, "rgba(247,166,0,0.18)");
+    glow.addColorStop(0.46, "rgba(247,166,0,0.05)");
+    glow.addColorStop(1, "rgba(0,0,0,0)");
+    context.fillStyle = glow;
+    context.fillRect(0, 0, width, height);
+
+    const driftTime = time * 0.00014;
+    const globalDriftX = Math.sin(driftTime) * 11;
+    const globalDriftY = Math.cos(driftTime * 0.82) * 7;
+
+    points.forEach((point) => {
+      const waveX = Math.sin(driftTime * point.baseSpeed + point.driftOffset) * 14;
+      const waveY = Math.cos(driftTime * point.baseSpeed * 1.2 + point.driftOffset) * 10;
+
+      point.x += (point.vx + globalDriftX + waveX) * delta;
+      point.y += (point.vy + globalDriftY + waveY) * delta;
+      point.pulse += delta * 2.2;
+
+      if (pointer.active) {
+        const dx = point.x - pointer.x;
+        const dy = point.y - pointer.y;
+        const distance = Math.hypot(dx, dy);
+        if (distance < 190 && distance > 0) {
+          const force = (190 - distance) / 190;
+          point.vx += (dx / distance) * force * 52 * delta;
+          point.vy += (dy / distance) * force * 52 * delta;
+        }
+      }
+
+      if (point.x < -24) point.x = width + 24;
+      if (point.x > width + 24) point.x = -24;
+      if (point.y < -24) point.y = height + 24;
+      if (point.y > height + 24) point.y = -24;
+
+      point.vx *= 0.995;
+      point.vy *= 0.995;
+    });
+
+    for (let i = 0; i < points.length; i += 1) {
+      for (let j = i + 1; j < points.length; j += 1) {
+        const first = points[i];
+        const second = points[j];
+        const distance = Math.hypot(first.x - second.x, first.y - second.y);
+        if (distance < 145) {
+          const opacity = (1 - distance / 145) * 0.34;
+          context.strokeStyle = `rgba(247,166,0,${opacity})`;
+          context.lineWidth = 0.9;
+          context.beginPath();
+          context.moveTo(first.x, first.y);
+          context.lineTo(second.x, second.y);
+          context.stroke();
+        }
+      }
+    }
+
+    points.forEach((point) => {
+      const shimmer = 0.6 + Math.sin(point.pulse) * 0.4;
+      context.beginPath();
+      context.arc(point.x, point.y, point.size + shimmer, 0, Math.PI * 2);
+      context.fillStyle = `rgba(255,244,210,${0.42 + shimmer * 0.32})`;
+      context.shadowColor = "rgba(247,166,0,0.75)";
+      context.shadowBlur = 12 + shimmer * 9;
+      context.fill();
+      context.shadowBlur = 0;
+    });
+
+    requestAnimationFrame(drawNetworkCanvas);
+  };
+
+  panel.addEventListener("pointermove", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    pointer.x = event.clientX - rect.left;
+    pointer.y = event.clientY - rect.top;
+    pointer.active = true;
+  });
+
+  panel.addEventListener("pointerleave", () => {
+    pointer.active = false;
+  });
+
+  window.addEventListener("resize", resizeNetworkCanvas);
+  resizeNetworkCanvas();
+  requestAnimationFrame(drawNetworkCanvas);
+});
+
+document.querySelectorAll("[data-reactive-card]").forEach((card) => {
+  card.addEventListener("pointermove", (event) => {
+    const rect = card.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const rotateY = ((x / rect.width) - 0.5) * 10;
+    const rotateX = ((y / rect.height) - 0.5) * -10;
+
+    card.style.setProperty("--mouse-x", `${x}px`);
+    card.style.setProperty("--mouse-y", `${y}px`);
+    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+  });
+
+  card.addEventListener("pointerleave", () => {
+    card.style.transform = "";
+  });
+});
